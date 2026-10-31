@@ -1,0 +1,14 @@
+.nextflow*
+work/
+results/
+*.rds
+*.rsav
+*.vcf*
+*.bam*
+*.cram*
+*.tsv
+*.csv
+manifest*.json
+__pycache__/
+stub_inputs/
+stub_output/

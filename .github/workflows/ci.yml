@@ -1,0 +1,19 @@
+name: Nextflow orchestration smoke
+on: [push, pull_request]
+jobs:
+  stub:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: nf-core/setup-nextflow@v2
+        with:
+          version: '24.10.5'
+      - run: python3 tests/make_stub_manifest.py
+      - run: |
+          nextflow run . -profile ci -stub-run --input stub_inputs/manifest.json \
+            --outdir stub_output --container unused-in-stub --mode full --expected_fits 1 --max_parallel 1
+          test -s stub_output/results/STUB_ONLY
