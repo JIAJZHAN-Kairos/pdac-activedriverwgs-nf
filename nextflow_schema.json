@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Pinned ActiveDriverWGS scatter/gather",
+  "type": "object",
+  "properties": {
+    "input": {"type": "string", "description": "Private S3 JSON manifest; never a public patient-data URL."},
+    "outdir": {"type": "string", "description": "Private S3 result prefix."},
+    "container": {"type": "string", "description": "Validated Linux image pinned by sha256 digest."},
+    "mode": {"type": "string", "enum": ["pilot", "full"], "default": "pilot"},
+    "max_parallel": {"type": "integer", "minimum": 1, "maximum": 64, "default": 64},
+    "expected_fits": {"type": "integer", "minimum": 1, "description": "Full cohort nonzero test count, including validated seed tests."}
+  },
+  "required": ["input", "outdir", "container"]
+}
