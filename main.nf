@@ -39,12 +39,13 @@ process COLLECT_TESTS {
     path membership
     path seed
     path expected_ids
+    path independent_counts
     output:
     path 'results', emit: results
     script:
     """
     export R_LIBS=/opt/adwgs/Rlib OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1
-    Rscript ${projectDir}/bin/collect_tests.R chunk_tests '${universe}' '${membership}' '${seed}' '${params.expected_fits}' '${expected_ids}'
+    Rscript ${projectDir}/bin/collect_tests.R chunk_tests '${universe}' '${membership}' '${seed}' '${params.expected_fits}' '${expected_ids}' '${independent_counts}'
     """
     stub:
     """
@@ -63,7 +64,7 @@ workflow {
     }
     FIT_BLOCK(blocks)
     if(params.mode == 'full') {
-        COLLECT_TESTS(FIT_BLOCK.out.tests.collect(),file(manifest.universe),file(manifest.membership),file(manifest.seed_results),file(manifest.expected_ids))
+        COLLECT_TESTS(FIT_BLOCK.out.tests.collect(),file(manifest.universe),file(manifest.membership),file(manifest.seed_results),file(manifest.expected_ids),file(manifest.independent_counts))
     } else {
         FIT_BLOCK.out.tests.subscribe { log.info "Pilot result: ${it}" }
     }

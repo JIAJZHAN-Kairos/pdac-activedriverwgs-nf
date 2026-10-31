@@ -16,11 +16,13 @@ The container must be pinned by digest and provide the validated runtime at
 
 The single JSON `--input` manifest has `schema_version: 1`, `max_vcpus`, a
 `blocks` array (`block_id`, `mutations`, `elements`, `ids` and their SHA256s),
-and `universe`, `membership`, `seed_results` paths. The last three files are
+and `universe`, `membership`, `seed_results`, `expected_ids`, and
+`independent_counts` paths. These files are
 required for `--mode full`. Block ID files list unique, nonzero element IDs.
 Seed results contain verified existing tests for identical inputs and elements.
 Block results and seed IDs must cover the exact expected nonzero test set
-once; the collector rejects duplicate or missing test counts. All unmutated
+once; the collector rejects duplicate, missing, or substituted test IDs and
+compares observed burdens against independent unique-donor counts. All unmutated
 elements are retained with P=1. BH is performed separately for each prespecified
 complete analysis family, across all its chromosomes and region classes.
 There is no per-block significance selection.

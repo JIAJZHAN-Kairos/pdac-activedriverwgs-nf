@@ -15,6 +15,13 @@ all[is.na(pp_element),pp_element:=1]
 stopifnot(!anyDuplicated(all$id),all(is.finite(all$pp_element)),all(all$pp_element>0 & all$pp_element<=1))
 bounds <- universe[,.(chr=chr[1],start=min(start),end=max(end),effective_bp=sum(end-start)),by=id]
 all <- merge(all,bounds,by='id')
+counts <- fread(a[7])
+stopifnot(!anyDuplicated(counts$id),setequal(counts$id,expected_ids))
+all <- merge(all,counts,by='id',all.x=TRUE)
+for(col in c('mutated_donors','SNV_donors','indel_donors','HMF_donors','APGI_donors','internal_donors'))
+  set(all,which(is.na(all[[col]])),col,0L)
+stopifnot(all(all$element_muts_obs[!is.na(all$element_muts_obs)]==all$mutated_donors[!is.na(all$element_muts_obs)]),
+          all(!is.na(all$element_muts_obs[all$mutated_donors>0L])))
 dir.create('results',showWarnings=FALSE);fwrite(all,'results/union_raw_tests.tsv',sep='\t')
 summary <- list()
 for(family_name in unique(membership$family)) {
@@ -26,9 +33,14 @@ for(family_name in unique(membership$family)) {
                   directly_annotated_genes=paste(sort(unique(gene[nzchar(gene)])),collapse=';'),
                   sources=paste(sort(unique(source)),collapse=';')),by=id]
   r <- merge(r,annotation,by='id');setorder(r,fdr_element,pp_element)
+  r[,`:=`(analysis_donors=373L,observed_expected_ratio=element_muts_obs/element_muts_exp)]
   folder <- file.path('results',family_name);dir.create(folder)
   fwrite(r,file.path(folder,'all_element_tests.tsv'),sep='\t')
   fwrite(r[significant==TRUE],file.path(folder,'significant_elements.tsv'),sep='\t')
+  pdf(file.path(folder,'diagnostics.pdf'),width=10,height=5)
+  par(mfrow=c(1,2));p <- sort(r$pp_element)
+  plot(-log10(ppoints(length(p))),-log10(p),pch=16,cex=.3,xlab='Expected -log10(P)',ylab='Observed -log10(P)',main=family_name)
+  abline(0,1,col='red');hist(r$mutated_donors,breaks=40,xlab='Independent mutated donors',main='Region recurrence');dev.off()
   summary[[family_name]] <- data.table(family=family_name,elements=nrow(r),significant=sum(r$significant))
 }
 fwrite(rbindlist(summary),'results/scenario_summary.tsv',sep='\t')
