@@ -19,7 +19,7 @@ process FIT_BLOCK {
     echo '${elements_sha}  ${elements}' | sha256sum -c -
     echo '${ids_sha}  ${ids}' | sha256sum -c -
     export R_LIBS=/opt/adwgs/Rlib OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1
-    Rscript ${projectDir}/bin/fit_block.R '${mutations}' '${elements}' '${ids}' '${block_id}'
+    fit_block.R '${mutations}' '${elements}' '${ids}' '${block_id}'
     """
     stub:
     """
@@ -45,7 +45,7 @@ process COLLECT_TESTS {
     script:
     """
     export R_LIBS=/opt/adwgs/Rlib OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1
-    Rscript ${projectDir}/bin/collect_tests.R chunk_tests '${universe}' '${membership}' '${seed}' '${params.expected_fits}' '${expected_ids}' '${independent_counts}'
+    collect_tests.R chunk_tests '${universe}' '${membership}' '${seed}' '${params.expected_fits}' '${expected_ids}' '${independent_counts}'
     """
     stub:
     """

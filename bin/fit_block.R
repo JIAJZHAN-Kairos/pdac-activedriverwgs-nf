@@ -1,3 +1,4 @@
+#!/usr/bin/env Rscript
 suppressPackageStartupMessages({library(ActiveDriverWGS);library(BSgenome.Hsapiens.UCSC.hg38);library(GenomicRanges);library(data.table);library(jsonlite)})
 setDTthreads(1)
 stopifnot(as.character(packageVersion('ActiveDriverWGS'))=='1.2.1',as.character(packageVersion('BSgenome.Hsapiens.UCSC.hg38'))=='1.4.4')

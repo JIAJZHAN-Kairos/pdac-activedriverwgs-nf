@@ -1,3 +1,4 @@
+#!/usr/bin/env Rscript
 suppressPackageStartupMessages({library(ActiveDriverWGS);library(data.table)})
 setDTthreads(1)
 a <- commandArgs(TRUE)
