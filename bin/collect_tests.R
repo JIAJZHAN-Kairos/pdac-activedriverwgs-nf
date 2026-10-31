@@ -10,6 +10,9 @@ stopifnot(nrow(tests)==expected,!anyDuplicated(tests$id),all(tests$id %in% unive
           length(expected_ids)==expected,!anyDuplicated(expected_ids),setequal(tests$id,expected_ids))
 # Use the pinned engine's formatting rules, including its P=0 floor.
 tests <- as.data.table(ActiveDriverWGS:::.fix_all_results(as.data.frame(tests)))
+if(!'native_indel_boundary_excess' %in% names(tests)) tests[,native_indel_boundary_excess:=0L]
+tests[is.na(native_indel_boundary_excess),native_indel_boundary_excess:=0L]
+stopifnot(all(tests$native_indel_boundary_excess>=0L))
 tests[is.na(pp_element),pp_element:=1]
 all <- merge(data.table(id=unique(universe$id)),tests,by='id',all.x=TRUE)
 all[is.na(pp_element),pp_element:=1]
@@ -19,9 +22,11 @@ all <- merge(all,bounds,by='id')
 counts <- fread(a[7])
 stopifnot(!anyDuplicated(counts$id),setequal(counts$id,expected_ids))
 all <- merge(all,counts,by='id',all.x=TRUE)
+all[is.na(native_indel_boundary_excess),native_indel_boundary_excess:=0L]
 for(col in c('mutated_donors','SNV_donors','indel_donors','HMF_donors','APGI_donors','internal_donors'))
   set(all,which(is.na(all[[col]])),col,0L)
-stopifnot(all(all$element_muts_obs[!is.na(all$element_muts_obs)]==all$mutated_donors[!is.na(all$element_muts_obs)]),
+stopifnot(all(all$element_muts_obs[!is.na(all$element_muts_obs)]==
+              (all$mutated_donors+all$native_indel_boundary_excess)[!is.na(all$element_muts_obs)]),
           all(!is.na(all$element_muts_obs[all$mutated_donors>0L])))
 dir.create('results',showWarnings=FALSE);fwrite(all,'results/union_raw_tests.tsv',sep='\t')
 summary <- list()

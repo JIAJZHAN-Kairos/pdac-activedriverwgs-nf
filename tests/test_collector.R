@@ -28,4 +28,8 @@ stopifnot(nrow(a)==3L,a[id=='synthetic3']$pp_element==1,
 file.copy('chunks/block.tsv','chunks/duplicate.tsv');stopifnot(run()!=0L);unlink('chunks/duplicate.tsv')
 file.rename('chunks/block.tsv','missing.tsv');stopifnot(run()!=0L);file.rename('missing.tsv','chunks/block.tsv')
 counts[id=='synthetic1',mutated_donors:=4L];fwrite(counts,'counts.tsv',sep='\t');stopifnot(run()!=0L)
-cat('PASS: silent elements and family-wide BH; duplicate/missing tests and donor mismatches rejected.\n')
+counts[id=='synthetic1',mutated_donors:=3L];fwrite(counts,'counts.tsv',sep='\t')
+excess <- row('synthetic1',.001,4,1,TRUE);excess[,native_indel_boundary_excess:=1L]
+fwrite(excess,'chunks/block.tsv',sep='\t');stopifnot(run()==0L)
+excess[,native_indel_boundary_excess:=0L];fwrite(excess,'chunks/block.tsv',sep='\t');stopifnot(run()!=0L)
+cat('PASS: complete BH, duplicate/missing tests and unexplained donor mismatch gates; documented native boundary excess retained separately.\n')

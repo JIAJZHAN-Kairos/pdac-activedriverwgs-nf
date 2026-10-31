@@ -27,6 +27,15 @@ elements are retained with P=1. BH is performed separately for each prespecified
 complete analysis family, across all its chromosomes and region classes.
 There is no per-block significance selection.
 
+The pinned engine can count two indels from one donor when one indel crosses
+an element/background boundary. The wrapper preserves native observed, expected
+and P values. For this case it reconstructs the native interval-counting rules,
+records `native_indel_boundary_excess`, and validates
+`element_muts_obs = mutated_donors + native_indel_boundary_excess`.
+Unexplained discrepancies still terminate execution. Report `mutated_donors`
+as the independent donor support and flag candidates with native count excess;
+the native observed count is not always a count of distinct donors.
+
 Use `--mode pilot` first, comparing raw P, expected burden and observed donor
 counts against independently generated native reference tests before starting
 the complete cohort. Computational completion is not scientific validation.
